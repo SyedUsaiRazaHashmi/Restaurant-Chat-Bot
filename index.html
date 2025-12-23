@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeliciousBites - Order Now</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #fff5eb, #ffe4e1);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 55px;
+            height: 55px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .tabs {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 85px;
+            z-index: 99;
+        }
+
+        .tabs-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 4px solid transparent;
+        }
+
+        .tab:hover { background: #e8e8e8; }
+        .tab.active {
+            background: #ff6b35;
+            color: white;
+            border-bottom-color: #f7931e;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .chatbot-box {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            overflow: hidden;
+            border: 2px solid #ff6b35;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: linear-gradient(to bottom, #fff5eb, white);
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message.user { flex-direction: row-reverse; }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ff6b35;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        .message.user .message-avatar { background: #4a90e2; }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 1rem 1.5rem;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 2px solid #ff6b35;
+            white-space: pre-line;
+            line-height: 1.7;
+        }
+
+        .message.bot .message-bubble { border-radius: 18px 18px 18px 4px; }
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            border-color: #4a90e2;
+            border-radius: 18px 18px 4px 18px;
+        }
+
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .quick-reply-btn {
+            padding: 0.5rem 1rem;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .quick-reply-btn:hover {
+            background: #f7931e;
+            transform: scale(1.05);
+        }
+
+        .typing {
+            display: flex;
+            gap: 0.4rem;
+            padding: 1rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #ff6b35;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        .input-area {
+            padding: 1.5rem;
+            background: white;
+            border-top: 2px solid #f0f0f0;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #ff6b35;
+            border-radius: 24px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .chat-input:focus {
+            border-color: #f7931e;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+        }
+
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(255,107,53,0.4);
+        }
+
+        .cart-box {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid #ff6b35;
+        }
+
+        .cart-item {
+            padding: 1rem;
+            background: #fff5eb;
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            border: 1px solid #ff6b35;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkout-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #ff6b35;
+            outline: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 4px solid #ff6b35;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff6b35;
+        }
+
+        .orders-table {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            background: #fff5eb;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-preparing {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .chat-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">🍕</div>
+                <div>
+                    <h1>DeliciousBites</h1>
+                    <p>Order Now • Fast Delivery</p>
+                </div>
+            </div>
+            <div>
+                <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px;">
+                    Open Now 🟢
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tabs-container">
+            <button class="tab active" onclick="switchTab('chat')">💬 Order Now</button>
+            <button class="tab" onclick="switchTab('dashboard')">📊 Dashboard</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="chat" class="tab-content active">
+            <div class="chat-layout">
+                <div class="chatbot-box">
+                    <div class="chatbot-header">
+                        <h2>🤖 AI Order Assistant</h2>
+                        <p>Online • Instant Response</p>
+                    </div>
+                    <div class="messages" id="messages"></div>
+                    <div class="input-area">
+                        <input type="text" class="chat-input" id="userInput" 
+                               placeholder="Type your message..." 
+                               onkeypress="if(event.key==='Enter') sendMessage()">
+                        <button class="send-btn" onclick="sendMessage()">➤</button>
+                    </div>
+                </div>
+
+                <div class="cart-box">
+                    <h3 style="margin-bottom: 1rem;">🛒 Your Cart</h3>
+                    <div id="cartItems"></div>
+                    <div id="cartTotal" style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #ff6b35;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="tab-content">
+            <div class="stats-grid" id="statsGrid"></div>
+            <div class="orders-table">
+                <h2 style="margin-bottom: 1rem;">📦 Recent Orders</h2>
+                <table id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem;">Complete Your Order</h2>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="customerName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Delivery Address *</label>
+                    <textarea id="customerAddress" rows="3" required placeholder="123 Main Street, Apt 4B"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Contact Number *</label>
+                    <input type="tel" id="customerPhone" required placeholder="+1 (555) 123-4567">
+                </div>
+                <button type="submit" class="checkout-btn">Place Order 🚀</button>
+                <button type="button" onclick="closeModal()" style="width: 100%; margin-top: 1rem; padding: 0.75rem; background: #ccc; border: none; border-radius: 10px; cursor: pointer;">
+                    Cancel
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const sessionId = 'user_' + Date.now();
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+            
+            if (tab === 'dashboard') loadDashboard();
+        }
+
+        function addMessage(text, isUser = false, quickReplies = []) {
+            const div = document.getElementById('messages');
+            const msg = document.createElement('div');
+            msg.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            let quickRepliesHTML = '';
+            if (quickReplies.length > 0) {
+                quickRepliesHTML = '<div class="quick-replies">';
+                quickReplies.forEach(reply => {
+                    quickRepliesHTML += `<button class="quick-reply-btn" onclick="sendQuickReply('${reply}')">${reply}</button>`;
+                });
+                quickRepliesHTML += '</div>';
+            }
+            
+            msg.innerHTML = `
+                <div class="message-avatar">${isUser ? 'U' : '🤖'}</div>
+                <div>
+                    <div class="message-bubble">${text}</div>
+                    ${quickRepliesHTML}
+                </div>
+            `;
+            
+            div.appendChild(msg);
+            div.scrollTop = div.scrollHeight;
+        }
+
+        function showTyping() {
+            const div = document.getElementById('messages');
+            const typing = document.createElement('div');
+            typing.className = 'message bot';
+            typing.id = 'typing';
+            typing.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">
+                    <div class="typing">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            div.appendChild(typing);
+            div.scrollTop = div.scrollHeight;
+        }
+
+        function removeTyping() {
+            const typing = document.getElementById('typing');
+            if (typing) typing.remove();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessage(message, true);
+            input.value = '';
+            
+            showTyping();
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, session_id: sessionId })
+                });
+                
+                const data = await response.json();
+                
+                setTimeout(() => {
+                    removeTyping();
+                    
+                    if (data.success) {
+                        addMessage(data.response, false, data.quick_replies || []);
+                        
+                        if (data.action === 'show_checkout_form') {
+                            setTimeout(() => showCheckoutModal(), 500);
+                        }
+                        
+                        updateCart();
+                    } else {
+                        addMessage('Error: ' + data.error, false);
+                    }
+                }, 800);
+            } catch (error) {
+                removeTyping();
+                addMessage('Connection error. Please try again.', false);
+            }
+        }
+
+        function sendQuickReply(reply) {
+            document.getElementById('userInput').value = reply;
+            sendMessage();
+        }
+
+        async function updateCart() {
+            try {
+                const response = await fetch('/api/get-cart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const cartItems = document.getElementById('cartItems');
+                    const cartTotal = document.getElementById('cartTotal');
+                    
+                    if (data.cart.length === 0) {
+                        cartItems.innerHTML = '<p style="text-align: center; color: #999; padding: 2rem 0;">Cart is empty</p>';
+                        cartTotal.innerHTML = '';
+                    } else {
+                        cartItems.innerHTML = data.cart.map(item => `
+                            <div class="cart-item">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <div>
+                                        <strong>${item.name}</strong>
+                                        <p style="font-size: 0.9rem; color: #666;">⭐ ${item.rating}</p>
+                                    </div>
+                                    <strong style="color: #ff6b35;">$${item.price}</strong>
+                                </div>
+                            </div>
+                        `).join('');
+                        
+                        cartTotal.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem;">
+                                <span>Total:</span>
+                                <span style="color: #ff6b35;">$${data.total.toFixed(2)}</span>
+                            </div>
+                            <button class="checkout-btn" onclick="showCheckoutModal()">Checkout 🚀</button>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating cart:', error);
+            }
+        }
+
+        function showCheckoutModal() {
+            document.getElementById('checkoutModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('checkoutModal').classList.remove('active');
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('customerName').value;
+            const address = document.getElementById('customerAddress').value;
+            const phone = document.getElementById('customerPhone').value;
+            
+            try {
+                const response = await fetch('/api/place-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        customer_name: name,
+                        customer_address: address,
+                        customer_phone: phone
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    closeModal();
+                    addMessage(`🎉 Order Placed Successfully!\n\nOrder ID: ${data.order_id}\nTotal: $${data.total}\n\nThank you for your order!`, false);
+                    updateCart();
+                    
+                    document.getElementById('checkoutForm').reset();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error placing order');
+            }
+        });
+
+        async function loadDashboard() {
+            try {
+                const statsRes = await fetch('/api/stats');
+                const statsData = await statsRes.json();
+                
+                if (statsData.success) {
+                    const stats = statsData.stats;
+                    document.getElementById('statsGrid').innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-label">Total Orders</div>
+                            <div class="stat-value">${stats.total_orders}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Revenue</div>
+                            <div class="stat-value">$${stats.revenue}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Avg Order</div>
+                            <div class="stat-value">$${stats.avg_order}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Pending</div>
+                            <div class="stat-value">${stats.pending}</div>
+                        </div>
+                    `;
+                }
+                
+                const ordersRes = await fetch('/api/orders');
+                const ordersData = await ordersRes.json();
+                
+                if (ordersData.success) {
+                    const tbody = document.querySelector('#ordersTable tbody');
+                    tbody.innerHTML = ordersData.orders.map(order => `
+                        <tr>
+                            <td style="font-weight: 600">${order.order_id}</td>
+                            <td>${order.customer_name}</td>
+                            <td>${order.customer_phone}</td>
+                            <td style="color: #ff6b35; font-weight: bold">$${order.total_amount}</td>
+                            <td>
+                                <span class="status-badge status-${order.order_status.toLowerCase()}">
+                                    ${order.order_status}
+                                </span>
+                            </td>
+                            <td>${new Date(order.created_at).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Dashboard error:', error);
+            }
+        }
+
+        window.onload = () => {
+            addMessage('👋 Welcome to DeliciousBites!\n\nHow can I help you today?\n\n🍕 Browse Menu\n🔥 Hot Picks\n🛒 View Cart', false, ['Show Menu', 'Hot Picks']);
+            updateCart();
+        };
+    </script>
+</body>
+</html>
